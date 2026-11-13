@@ -4,11 +4,11 @@ const VERSION = "abattoir-v1.1.0";
 
 const FILES = [
   "./", "./index.html", "./manifest.json",
-  "./css/style.css",
-  "./js/logo-data.js", "./js/logic.js", "./js/printer.js", "./js/core.js",
-  "./js/ticket.js", "./js/report.js", "./js/prices.js", "./js/logo.js",
-  "./js/settings.js", "./js/main.js", "./js/pwa.js",
-  "./images/icon-192.png", "./images/icon-512.png", "./images/icon-maskable-512.png"
+  "./style.css",
+  "./logo-data.js", "./logic.js", "./printer.js", "./core.js",
+  "./ticket.js", "./report.js", "./prices.js", "./logo.js",
+  "./settings.js", "./main.js", "./pwa.js",
+  "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"
 ];
 
 // Installation : on garde une copie de tous les fichiers

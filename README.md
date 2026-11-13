@@ -38,3 +38,8 @@ Les fichiers JS partagent les memes variables globales : ne pas changer l'ordre 
 Necessite HTTPS : publier avec GitHub Pages, ouvrir le lien dans Chrome, puis menu > *Installer l'application*.
 A chaque modification du projet, changer `VERSION` dans `sw.js` (ex. `abattoir-v1.1.1`) pour forcer la mise a jour,
 et ajouter tout nouveau fichier a la liste `FILES`.
+
+## Structure a plat
+Tous les fichiers sont a la racine du depot (aucun dossier) pour faciliter l'envoi depuis un telephone.
+Pour ranger en dossiers (css/, js/, images/), le faire sur ordinateur puis corriger les chemins dans
+`index.html`, `manifest.json` et `sw.js`.
