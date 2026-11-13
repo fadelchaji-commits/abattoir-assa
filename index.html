@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abattoir - Tickets</title>
+<meta name="theme-color" content="#1e78c8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="images/icon-192.png">
+<link rel="apple-touch-icon" href="images/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="head"><img id="hlogo" alt="" style="display:none;height:56px;width:auto"><div><div class="sub">ROYAUME DU MAROC</div><div class="title" id="ttl"></div></div></header>
+<nav><a href="#" data-v="ticket">Ticket</a><a href="#" data-v="report">Rapport</a><a href="#" data-v="prices">Prix</a><a href="#" data-v="settings">Reglages</a></nav>
+<div id="app"></div>
+
+<!-- L'ordre est important : chaque fichier utilise ceux qui sont au-dessus -->
+<script src="js/logo-data.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/printer.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ticket.js"></script>
+<script src="js/report.js"></script>
+<script src="js/prices.js"></script>
+<script src="js/logo.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/main.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
