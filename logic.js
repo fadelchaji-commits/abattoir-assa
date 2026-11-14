@@ -84,7 +84,7 @@ function stamp(d) {
 }
 function nextTicketNo(tickets, d) {
   const day = stamp(d).slice(0, 10);
-  const n = tickets.filter(t => t.ts.startsWith(day)).length + 1;
+  const n = Math.max(0, ...tickets.filter(t => t.ts.startsWith(day)).map(t => parseInt(t.no.slice(-3), 10) || 0)) + 1;
   return day.replace(/-/g, "") + "-" + String(n).padStart(3, "0");
 }
 

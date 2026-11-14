@@ -31,7 +31,7 @@ function addRow() { draft = collectForm(); draft.rows.push({ animal: "0", heads:
 function delRow(b) { draft = collectForm(); if (draft.rows.length > 1) { const i = [...document.querySelectorAll(".arow")].indexOf(b.parentNode); draft.rows.splice(i, 1); } viewTicket(); }
 function createTicket() {
   draft = collectForm();
-  const r = makeTicket(cfg, draft, tickets, new Date());
+  const r = makeTicket(cfg, draft, tickets.concat(deleted), new Date());
   if (r.errors) { viewTicket(r.errors); return; }
   tickets.push(r.ticket); saveTk(); draft = null;
   if (prefs.autoprint) printTicket(r.ticket.no);      // dans le meme clic : necessaire pour ouvrir RawBT
@@ -39,12 +39,24 @@ function createTicket() {
 }
 function viewResult() {
   const t = tickets.find(x => x.no === lastNo); if (!t) return show("ticket");
-ensureLogo().then(() => { setHeadLogo(); if (view === "settings") viewSettings(); });
-  $("app").innerHTML = '<div class="card">' +
+$("app").innerHTML = '<div class="card">' +
     (prefs.logoOn && logo ? '<div style="text-align:center;background:#fff"><img src="' + logo.src + '" style="max-width:' + Math.min(logo.w, 300) + 'px;filter:grayscale(1) contrast(2)"></div>' : "") + "<pre>" +
     esc(previewText(renderTicket(t, prefs.chars), prefs.chars)) + "</pre>" +
     '<div class="big">TOTAL : ' + f2(t.total) + " DH</div>" +
     '<button onclick="printTicket(\'' + t.no + '\')">Imprimer / Reimprimer</button>' +
-    '<button class="blue" onclick="show(\'ticket\')">Nouveau ticket</button></div>';
+    '<button class="blue" onclick="show(\'ticket\')">Nouveau ticket</button><button class="del" onclick="deleteTicket(\'' + t.no + '\')">Supprimer ce ticket</button></div>';
 }
 
+
+// ---------- Suppression protegee par le code secret ----------
+function deleteTicket(no) {
+  if (!cfg.admin_pin) return alert("Definissez d'abord un code secret : Reglages > Commune et bouchers > Code secret.");
+  const t = tickets.find(x => x.no === no); if (!t) return;
+  const p = prompt("Supprimer le ticket " + no + " (" + f2(t.total) + " DH).\nEntrez le code secret :");
+  if (p === null) return;
+  if (p.trim() !== cfg.admin_pin) return alert("Code incorrect.");
+  deleted.push(Object.assign({}, t, { deleted_at: stamp(new Date()) }));
+  tickets = tickets.filter(x => x.no !== no); saveTk(); saveDel();
+  alert("Ticket " + no + " supprime.");
+  if (view === "result") show("ticket"); else viewReport($("rday") ? $("rday").value : undefined);
+}

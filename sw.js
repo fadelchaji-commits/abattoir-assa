@@ -1,6 +1,6 @@
 // Service worker : fait fonctionner l'application hors connexion.
 // IMPORTANT : changez le numero de version a chaque mise a jour du projet.
-const VERSION = "abattoir-v1.1.0";
+const VERSION = "abattoir-v1.3.0";
 
 const FILES = [
   "./", "./index.html", "./manifest.json",

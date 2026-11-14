@@ -9,6 +9,8 @@ function loadJSON(k, d) { try { const v = store.get(k); return v ? JSON.parse(v)
 let cfg, tickets, prefs;
 try { cfg = normalizeConfig(loadJSON(KEY_CFG, DEFAULT_CONFIG)); } catch (e) { cfg = normalizeConfig(DEFAULT_CONFIG); }
 tickets = loadJSON(KEY_TK, []);
+const KEY_DEL = "abattoir_deleted"; let deleted = loadJSON(KEY_DEL, []);
+const saveDel = () => store.set(KEY_DEL, JSON.stringify(deleted));
 prefs = Object.assign({ mode: "rawbt", autoprint: true, chars: 48, cut: "gs66", feed: 5, logoOn: true, logoW: 200, logoT: 160, logoM: "dither", noDefault: false }, loadJSON(KEY_PREF, {}));
 let logo = loadJSON(KEY_LOGO, null); if (logo && !logo.b64) logo = null;
 const saveCfg = () => store.set(KEY_CFG, JSON.stringify(cfg));

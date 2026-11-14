@@ -1,6 +1,6 @@
 // ---------- Reglages ----------
 function viewSettings(m, errs) {
-  $("app").innerHTML = '<div class="card"><h3>Impression</h3>' + msg("ok", m) + (errs || []).map(e => msg("err", e)).join("") +
+  $("app").innerHTML = '<div class="card"><h3>Impression</h3>' + (cfg.admin_pin ? "" : '<div class="err">Aucun code secret : prix et suppression non proteges. Definissez-le dans "Commune et bouchers".</div>') + msg("ok", m) + (errs || []).map(e => msg("err", e)).join("") +
     '<label>Mode<select id="pmode"><option value="rawbt"' + (prefs.mode === "rawbt" ? " selected" : "") + '>RawBT (recommande)</option><option value="usb"' + (prefs.mode === "usb" ? " selected" : "") + '>USB direct (essai)</option></select></label>' +
     '<label>Largeur du ticket<select id="pchars"><option value="48"' + (prefs.chars === 48 ? " selected" : "") + '>80 mm - 48 colonnes</option><option value="42"' + (prefs.chars === 42 ? " selected" : "") + '>80 mm - 42 colonnes</option><option value="32"' + (prefs.chars === 32 ? " selected" : "") + '>58 mm - 32 colonnes</option></select></label>' +
     '<label>Coupe du ticket<select id="pcut">' + [["gs66","Coupe partielle (GS V 66) - defaut"],["gs0","Coupe totale (GS V 0)"],["gs1","Coupe partielle (GS V 1)"],["gs65","Coupe totale + avance (GS V 65)"],["esci","ESC i"],["escm","ESC m"],["none","Aucune coupe"]].map(c => '<option value="' + c[0] + '"' + (prefs.cut === c[0] ? " selected" : "") + ">" + c[1] + "</option>").join("") + '</select></label>' +
@@ -12,11 +12,11 @@ function viewSettings(m, errs) {
     '<label>Libelle de la Qarjouta<input type="text" id="sql" value="' + esc(cfg.qarjouta_label) + '"></label>' +
     '<label>Qarjouta apres N lignes de taxes<input type="number" id="sqa" min="0" value="' + cfg.qarjouta_after + '"></label>' +
     '<label>Bouchers (un par ligne)<textarea id="sbut" rows="8">' + esc(cfg.butchers.join("\n")) + "</textarea></label>" +
-    '<label>Nouveau code pour modifier les prix (vide = inchange)<input type="password" id="snp" inputmode="numeric"></label>' +
+    '<label>Code secret : prix, reglages, suppression de tickets (vide = inchange)<input type="password" id="snp" inputmode="numeric"></label>' +
     pinField().replace('id="pin"', 'id="pin"') + '<button onclick="saveSettings()">Enregistrer</button></div>' +
-    '<div class="card"><h3>Donnees</h3><p class="muted">' + tickets.length + " ticket(s) enregistre(s) sur ce telephone." + (storageOK ? "" : " ATTENTION : stockage indisponible, exportez souvent.") + "</p>" +
+    '<div class="card"><h3>Donnees</h3><p class="muted">' + tickets.length + " ticket(s) enregistre(s) sur ce telephone." + (deleted.length ? " " + deleted.length + " supprime(s), conserves dans la sauvegarde." : "") + (storageOK ? "" : " ATTENTION : stockage indisponible, exportez souvent.") + "</p>" +
     '<button onclick="download(\'registre.csv\', csvOf(tickets), \'text/csv\')">Exporter tout le registre (CSV)</button>' +
-    '<button class="blue" onclick="download(\'sauvegarde_abattoir.json\', JSON.stringify({cfg, tickets}), \'application/json\')">Sauvegarde complete (JSON)</button>' +
+    '<button class="blue" onclick="backupNow()">Sauvegarde complete (JSON)</button>' +
     '<label>Restaurer une sauvegarde ou importer config.json<input type="file" id="sfile" accept=".json,application/json" onchange="importFile(this)"></label></div>';
 }
 function savePref(test) {
@@ -40,7 +40,7 @@ function importFile(inp) {
       const j = JSON.parse(String(rd.result).replace(/^\ufeff/, ""));
       if (j.cfg && Array.isArray(j.tickets)) {
         if (!confirm("Remplacer les donnees actuelles par cette sauvegarde ?")) return;
-        cfg = normalizeConfig(j.cfg); tickets = j.tickets; saveCfg(); saveTk();
+        cfg = normalizeConfig(j.cfg); tickets = j.tickets; deleted = Array.isArray(j.deleted) ? j.deleted : []; saveCfg(); saveTk(); saveDel();
       } else {
         if (!confirm("Remplacer la configuration (prix, bouchers) par ce fichier ?")) return;
         cfg = normalizeConfig(Object.assign({}, j, { admin_pin: cfg.admin_pin })); saveCfg();
@@ -51,3 +51,9 @@ function importFile(inp) {
   rd.readAsText(f);
 }
 
+
+function backupNow() {
+  prefs.lastBackup = Date.now(); savePrefs();
+  download("sauvegarde_abattoir_" + stamp(new Date()).slice(0, 10) + ".json", JSON.stringify({ cfg, tickets, deleted }), "application/json");
+  viewSettings("Sauvegarde telechargee. Gardez-la en lieu sur.");
+}
